@@ -56,14 +56,17 @@ class App:
  def on_scroll(self,x,y,dx,dy):
   with self.lock:self.wheel+=1;self.last_mouse="滚轮上滚" if dy>0 else "滚轮下滚";self.event="鼠标："+self.last_mouse
  def add_key(self,parent,label,kid,col,row,span=1):
+  # Tkinter 的 row/column 必须是整数；布局坐标允许半键宽，因此先换算为整数网格
+  grid_col = int(round(col * 2))
+  grid_span = max(1, int(round(span * 2)))
   f=tk.Frame(parent,bg="#e8edf2",highlightthickness=1,highlightbackground="#bac6d2")
-  f.grid(row=row,column=col,columnspan=max(1,int(span*2)),padx=2,pady=2,sticky="nsew")
+  f.grid(row=row,column=grid_col,columnspan=grid_span,padx=2,pady=2,sticky="nsew")
   f.configure(height=48);f.grid_propagate(False)
   a=tk.Label(f,text=label,bg="#e8edf2",fg="#26394b",font=("Segoe UI",8,"bold"));a.pack(anchor="w",padx=4,pady=(3,0))
   b=tk.Label(f,text="0",bg="#e8edf2",fg="#657586",font=("Segoe UI",10,"bold"));b.pack(side="bottom",anchor="e",padx=4,pady=(0,3))
   self.widgets[kid]=(f,a,b)
  def build_keys(self,parent):
-  for c in range(26):parent.grid_columnconfigure(c,weight=1,uniform="key")
+  for c in range(52):parent.grid_columnconfigure(c,weight=1,uniform="key")
   for r,row in enumerate(LAYOUT):
    for label,kid,col,span in row:self.add_key(parent,label,kid,col,r,span)
  def refresh(self):
